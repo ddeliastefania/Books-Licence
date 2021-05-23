@@ -1,17 +1,13 @@
+import { observer } from "mobx-react-lite";
 import React, { ChangeEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Book } from "../../../app/models/book";
+import { useStore } from "../../../app/stores/store";
 
-interface Props {
-  book: Book | undefined;
-  closeForm: () => void;
-  createOrEdit: (book: Book) => void;
-}
-export default function BookForm({
-  book: selectedBook,
-  closeForm,
-  createOrEdit,
-}: Props) {
+export default observer(function BookForm() {
+  const { bookStore } = useStore();
+  const { selectedBook, closeForm, createBook, updateBook, loading } =
+    bookStore;
+
   const initialState = selectedBook ?? {
     id: "",
     title: "",
@@ -25,7 +21,7 @@ export default function BookForm({
   const [book, setBook] = useState(initialState);
 
   function handleSubmit() {
-    createOrEdit(book);
+    book.id ? updateBook(book) : createBook(book);
   }
 
   function handleInputChange(
@@ -63,6 +59,7 @@ export default function BookForm({
           onChange={handleInputChange}
         />
         <Form.Input
+          type="date"
           placeholder="Date"
           value={book.date}
           name="date"
@@ -75,6 +72,7 @@ export default function BookForm({
           onChange={handleInputChange}
         />
         <Button
+          loading={loading}
           floated="right"
           positive
           type="submit"
@@ -92,4 +90,4 @@ export default function BookForm({
       </Form>
     </Segment>
   );
-}
+});

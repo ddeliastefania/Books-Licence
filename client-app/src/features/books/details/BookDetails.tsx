@@ -1,18 +1,14 @@
 import React from "react";
 import { Button, Card, Image } from "semantic-ui-react";
-import { Book } from "../../../app/models/book";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { useStore } from "../../../app/stores/store";
 
-interface Props {
-  book: Book;
-  cancelSelectBook: () => void;
-  openForm: (id: string) => void;
-}
+export default function BookDetails() {
+  const {bookStore} = useStore();
+  const {selectedBook: book, openForm, cancelSelectedBook} = bookStore;
 
-export default function BookDetails({
-  book,
-  cancelSelectBook,
-  openForm,
-}: Props) {
+  if(!book) return <LoadingComponent/>;
+
   return (
     <Card fluid>
       <Image src={`/assets/categoryImages/${book.category}.jpg`} />
@@ -32,7 +28,7 @@ export default function BookDetails({
             content="Edit"
           />
           <Button
-            onClick={cancelSelectBook}
+            onClick={cancelSelectedBook}
             basic
             color="grey"
             content="Cancel"
