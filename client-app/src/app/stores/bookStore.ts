@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Book } from "../models/book";
-import { v4 as uuid } from "uuid";
 
 export default class BookStore {
   bookRegistry = new Map<string, Book>();
@@ -19,12 +18,22 @@ export default class BookStore {
       (a, b) => Date.parse(a.date) - Date.parse(b.date)
     );
   }
+
+  get groupedBooks() {
+    return Object.entries(
+      this.booksByDate.reduce((books, book) => {
+        const date = book.date;
+        books[date] = books[date] ? [...books[date], book] : [book];
+        return books;
+      }, {} as { [key: string]: Book[] })
+    );
+  }
   loadBooks = async () => {
+    this.loadingInitial = true;
     try {
       const books = await agent.Books.list();
       books.forEach((book) => {
-        book.date = book.date.split("T")[0];
-        this.bookRegistry.set(book.id, book);
+        this.setBook(book);
       });
       this.setLoadingInitial(false);
     } catch (error) {
@@ -33,29 +42,43 @@ export default class BookStore {
     }
   };
 
+  loadBook = async (id: string) => {
+    let book = this.getBook(id);
+    if (book) {
+      this.selectedBook = book;
+      return book;
+    } else {
+      this.loadingInitial = true;
+      try {
+        book = await agent.Books.details(id);
+        this.setBook(book);
+        runInAction(() => {
+          this.selectedBook = book;
+        });
+        this.setLoadingInitial(false);
+        return book;
+      } catch (error) {
+        console.log(error);
+        this.setLoadingInitial(false);
+      }
+    }
+  };
+
+  private setBook = (book: Book) => {
+    book.date = book.date.split("T")[0];
+    this.bookRegistry.set(book.id, book);
+  };
+
+  private getBook = (id: string) => {
+    return this.bookRegistry.get(id);
+  };
+
   setLoadingInitial = (state: boolean) => {
     this.loadingInitial = state;
   };
 
-  selectBook = (id: string) => {
-    this.selectedBook = this.bookRegistry.get(id);
-  };
-
-  cancelSelectedBook = () => {
-    this.selectedBook = undefined;
-  };
-  openForm = (id?: string) => {
-    id ? this.selectBook(id) : this.cancelSelectedBook();
-    this.editMode = true;
-  };
-
-  closeForm = () => {
-    this.editMode = false;
-  };
-
   createBook = async (book: Book) => {
     this.loading = true;
-    book.id = uuid();
     try {
       await agent.Books.create(book);
       runInAction(() => {
@@ -96,7 +119,6 @@ export default class BookStore {
       await agent.Books.delete(id);
       runInAction(() => {
         this.bookRegistry.delete(id);
-        if (this.selectedBook?.id === id) this.cancelSelectedBook();
         this.loading = false;
       });
     } catch (error) {

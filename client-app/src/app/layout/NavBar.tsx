@@ -1,13 +1,12 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import { Button, Container, Menu } from "semantic-ui-react";
-import { useStore } from "../stores/store";
 
 export default function NavBar() {
-  const { bookStore } = useStore();
   return (
     <Menu inverted fixed="top">
       <Container>
-        <Menu.Item header>
+        <Menu.Item as={NavLink} to="/" exact header>
           <img
             src="/assets/logo.png"
             alt="logo"
@@ -15,10 +14,11 @@ export default function NavBar() {
           />
           Books
         </Menu.Item>
-        <Menu.Item name="Books" />
+        <Menu.Item as={NavLink} to="/books" name="Books" />
         <Menu.Item>
           <Button
-            onClick={() => bookStore.openForm()}
+            as={NavLink}
+            to="/createBook"
             positive
             content="Create Book"
           />

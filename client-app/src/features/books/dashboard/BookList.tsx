@@ -1,54 +1,26 @@
+import React from "react";
 import { observer } from "mobx-react-lite";
-import React, { SyntheticEvent, useState } from "react";
-import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { Fragment } from "react";
+import { Header } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
+import BookListItem from "./BookListItem";
 
-export default observer( function BookList() {
+export default observer(function BookList() {
   const { bookStore } = useStore();
-  const {deleteBook, booksByDate, loading} = bookStore;
-
-  const [target, setTarget] = useState("");
-
-  function handleBookDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
-    setTarget(e.currentTarget.name);
-    deleteBook(id);
-  }
+  const { groupedBooks } = bookStore;
 
   return (
-    <Segment>
-      <Item.Group divided>
-        {booksByDate.map((book) => (
-          <Item key={book.id}>
-            <Item.Content>
-              <Item.Header as="a">{book.title}</Item.Header>
-              <Item.Meta>{book.date}</Item.Meta>
-              <Item.Description>
-                <div>{book.description}</div>
-                <div>
-                  {book.author}, {book.language}
-                </div>
-              </Item.Description>
-              <Item.Extra>
-                <Button
-                  onClick={() => bookStore.selectBook(book.id)}
-                  floated="right"
-                  content="View"
-                  color="blue"
-                />
-                <Button
-                  name={book.id}
-                  loading={loading && target === book.id}
-                  onClick={(e) => handleBookDelete(e, book.id)}
-                  floated="right"
-                  content="Delete"
-                  color="red"
-                />
-                <Label basic content={book.category} />
-              </Item.Extra>
-            </Item.Content>
-          </Item>
-        ))}
-      </Item.Group>
-    </Segment>
+    <>
+      {groupedBooks.map(([group, books]) => (
+        <Fragment key={group}>
+          <Header sub color="teal">
+            {group}
+          </Header>
+          {books.map((book) => (
+            <BookListItem key={book.id} book={book} />
+          ))}
+        </Fragment>
+      ))}
+    </>
   );
-})
+});
