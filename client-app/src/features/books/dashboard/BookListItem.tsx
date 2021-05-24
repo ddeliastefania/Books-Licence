@@ -17,7 +17,7 @@ export default function BookListItem({ book }: Props) {
               <Item.Header as={Link} to={`/books/${book.id}`}>
                 {book.title}
               </Item.Header>
-              <Item.Description>Hosted by Delia </Item.Description>
+              <Item.Description>Created by Delia </Item.Description>
             </Item.Content>
           </Item>
         </Item.Group>
