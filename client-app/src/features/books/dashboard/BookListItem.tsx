@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Icon, Item, Segment } from "semantic-ui-react";
 import { Book } from "../../../app/models/book";
+import { format } from "date-fns";
 
 interface Props {
   book: Book;
@@ -25,7 +26,7 @@ export default function BookListItem({ book }: Props) {
       <Segment>
         <span>
           <Icon name="clock" />
-          {book.date}
+          {format(book.date!, 'dd MMM yyyy h:mm aa')}
           <Icon name="book" />
           {book.category}
         </span>

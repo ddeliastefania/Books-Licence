@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { Segment, Grid, Icon } from "semantic-ui-react";
 import { Book } from "../../../app/models/book";
+import {format} from "date-fns";
 
 interface Props {
   book: Book;
@@ -26,7 +27,7 @@ export default observer(function BookDetailedInfo({ book }: Props) {
             <Icon name="calendar" size="large" color="teal" />
           </Grid.Column>
           <Grid.Column width={15}>
-            <span>{book.date}</span>
+            <span>{format(book.date!, "dd MMM yyyy h:mm aa")}</span>
           </Grid.Column>
         </Grid>
       </Segment>

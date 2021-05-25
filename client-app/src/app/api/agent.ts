@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { type } from "os";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { Book } from "../models/book";

@@ -1,7 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { Link } from "react-router-dom";
 import { Button, Header, Item, Segment, Image } from "semantic-ui-react";
 import { Book } from "../../../app/models/book";
+import { format } from "date-fns";
 
 const activityImageStyle = {
   filter: "brightness(30%)",
@@ -17,7 +19,7 @@ const activityImageTextStyle = {
 };
 
 interface Props {
-  book: Book
+  book: Book;
 }
 
 export default observer(function BookDetailedHeader({ book }: Props) {
@@ -38,7 +40,7 @@ export default observer(function BookDetailedHeader({ book }: Props) {
                   content={book.title}
                   style={{ color: "white" }}
                 />
-                <p>{book.date}</p>
+                <p>{format(book.date!, "dd MMM yyyy")}</p>
                 <p>
                   Created/Added by <strong>Delia</strong>
                 </p>
@@ -50,8 +52,13 @@ export default observer(function BookDetailedHeader({ book }: Props) {
       <Segment clearing attached="bottom">
         <Button color="teal">See the book now</Button>
         <Button>Not interest anymore</Button>
-        <Button color="orange" floated="right">
-          See more details 
+        <Button
+          as={Link}
+          to={`/manage/${book.id}`}
+          color="orange"
+          floated="right"
+        >
+          See more details
         </Button>
       </Segment>
     </Segment.Group>

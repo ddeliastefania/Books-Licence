@@ -1,13 +1,14 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Book } from "../models/book";
+import { format } from "date-fns";
 
 export default class BookStore {
   bookRegistry = new Map<string, Book>();
   selectedBook: Book | undefined = undefined;
   editMode = false;
   loading = false;
-  loadingInitial = true;
+  loadingInitial = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -15,19 +16,20 @@ export default class BookStore {
 
   get booksByDate() {
     return Array.from(this.bookRegistry.values()).sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+      (a, b) => a.date!.getTime() - b.date!.getTime()
     );
   }
 
   get groupedBooks() {
     return Object.entries(
       this.booksByDate.reduce((books, book) => {
-        const date = book.date;
+        const date = format(book.date!, "dd MMM yyyy");
         books[date] = books[date] ? [...books[date], book] : [book];
         return books;
       }, {} as { [key: string]: Book[] })
     );
   }
+
   loadBooks = async () => {
     this.loadingInitial = true;
     try {
@@ -65,7 +67,7 @@ export default class BookStore {
   };
 
   private setBook = (book: Book) => {
-    book.date = book.date.split("T")[0];
+    book.date = new Date(book.date!);
     this.bookRegistry.set(book.id, book);
   };
 
