@@ -3,13 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
 {
     public class Seed
     {
-        public static async Task SeedData(DataContext context)
+        public static async Task SeedData(DataContext context, UserManager<AppUser> userManager)
         {
+            if (!userManager.Users.Any())
+            {
+                var users = new List<AppUser>{
+                    new AppUser{DisplayName = "Delia", UserName = "ddeliastefania", Email = "ddeliastefania@yahoo.com"},
+                    new AppUser{DisplayName = "Catalin", UserName = "catalinbelu", Email = "catalinbelu@yahoo.com"},
+                    new AppUser{DisplayName = "Gabriela", UserName = "Gabriela", Email = "Gabriela@yahoo.com"},
+                    new AppUser{DisplayName = "Stefan", UserName = "Stefan", Email = "Stefan@yahoo.com"},
+                    new AppUser{DisplayName = "Anca", UserName = "Anca", Email = "Anca@yahoo.com"},
+                    new AppUser{DisplayName = "Andreea Diana", UserName = "Andreea Diana", Email = "andreeadiana@yahoo.com"},
+                    new AppUser{DisplayName = "Elena", UserName = "Elena", Email = "Elena@yahoo.com"},
+                    new AppUser{DisplayName = "Gabriel", UserName = "Gabriel", Email = "Gabriel@yahoo.com"},
+                    new AppUser{DisplayName = "HAHA", UserName = "haha", Email = "haha@yahoo.com"},
+
+                };
+
+                foreach (var user in users)
+                {
+                    await userManager.CreateAsync(user, "Pa$$w0rd");
+                }
+            }
             if (context.Books.Any()) return;
 
             var books = new List<Book>

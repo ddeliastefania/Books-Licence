@@ -15,7 +15,7 @@ export default observer(function BookDashboard() {
   }, [bookRegistry.size, loadBooks]);
 
   if (bookStore.loadingInitial)
-    return <LoadingComponent content="Loading app" />;
+    return <LoadingComponent content="Loading books ... " />;
 
   return (
     <Grid>
@@ -23,7 +23,7 @@ export default observer(function BookDashboard() {
         <BookList />
       </Grid.Column>
       <Grid.Column width="6">
-        <BookFilters/>
+        <BookFilters />
       </Grid.Column>
     </Grid>
   );
