@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Application.Profiles;
 
-namespace Domain
+namespace Application.Books
 {
-    public class Book
+    public class BookDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -12,8 +13,8 @@ namespace Domain
         public string Category { get; set; }
         public string Description { get; set; }
         public string Language { get; set; }
+        public string HostUsername { get; set; }
         public bool IsCancelled { get; set; }
-
-        public ICollection<BookAttendee> Attendees { get; set; } = new List<BookAttendee>();
+        public ICollection<Profile> Attendees { get; set; }
     }
 }

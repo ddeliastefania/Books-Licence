@@ -11,7 +11,7 @@ namespace Persistence
     {
         public static async Task SeedData(DataContext context, UserManager<AppUser> userManager)
         {
-            if (!userManager.Users.Any())
+            if (!userManager.Users.Any() && !context.Books.Any())
             {
                 var users = new List<AppUser>{
                     new AppUser{DisplayName = "Delia", UserName = "ddeliastefania", Email = "ddeliastefania@yahoo.com"},
@@ -30,10 +30,9 @@ namespace Persistence
                 {
                     await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
-            }
-            if (context.Books.Any()) return;
 
-            var books = new List<Book>
+
+                var books = new List<Book>
             {
                 new Book
                 {
@@ -42,7 +41,13 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(-2),
                     Category = "kids",
                     Description = "Book 2 months ago",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -51,7 +56,13 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(-1),
                     Category = "culture",
                     Description = "Book 1 month ago",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -60,7 +71,13 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(1),
                     Category = "culture",
                     Description = "Book 1 month in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[2],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -69,7 +86,13 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(2),
                     Category = "cooking",
                     Description = "Book 2 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[1],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -78,7 +101,17 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(3),
                     Category = "kids",
                     Description = "Book 3 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        },
+                        new BookAttendee{
+                            AppUser = users[1],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -87,7 +120,18 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(4),
                     Category = "kids",
                     Description = "Book 4 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[2],
+                            IsHost =true,
+                        },
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        }
+                    }
+
                 },
                 new Book
                 {
@@ -96,7 +140,17 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(5),
                     Category = "cooking",
                     Description = "Book 5 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        },
+                        new BookAttendee{
+                            AppUser = users[2],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -105,7 +159,17 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(6),
                     Category = "music",
                     Description = "Book 6 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[1],
+                            IsHost =true,
+                        },
+                        new BookAttendee{
+                            AppUser = users[2],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -114,7 +178,13 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(7),
                     Category = "travel",
                     Description = "Book 2 months ago",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        }
+                    }
                 },
                 new Book
                 {
@@ -123,12 +193,23 @@ namespace Persistence
                     Date = DateTime.Now.AddMonths(8),
                     Category = "cooking",
                     Description = "Book 8 months in future",
-                    Language ="English"
+                    Language ="English",
+                    Attendees = new List<BookAttendee>{
+                        new BookAttendee{
+                            AppUser = users[0],
+                            IsHost =true,
+                        },
+                        new BookAttendee{
+                            AppUser = users[1],
+                            IsHost =true,
+                        }
+                    }
                 }
             };
 
-            await context.Books.AddRangeAsync(books);
-            await context.SaveChangesAsync();
+                await context.Books.AddRangeAsync(books);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

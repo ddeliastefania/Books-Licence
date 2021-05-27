@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +15,23 @@ namespace Application.Books
 {
     public class List
     {
-        public class Query : IRequest<Result<List<Book>>> { }
-        public class Handler : IRequestHandler<Query, Result<List<Book>>>
+        public class Query : IRequest<Result<List<BookDto>>> { }
+        public class Handler : IRequestHandler<Query, Result<List<BookDto>>>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
+                _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<List<Book>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<BookDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return Result<List<Book>>.Success(await _context.Books.ToListAsync(cancellationToken));
+                var books = await _context.Books
+                .ProjectTo<BookDto>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+
+                return Result<List<BookDto>>.Success(books);
             }
         }
     }
