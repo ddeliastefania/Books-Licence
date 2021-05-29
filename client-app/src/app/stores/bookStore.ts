@@ -1,7 +1,9 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Book } from "../models/book";
+import { Book, BookFormValues } from "../models/book";
 import { format } from "date-fns";
+import { store } from "./store";
+import { Profile } from "../models/profile";
 
 export default class BookStore {
   bookRegistry = new Map<string, Book>();
@@ -67,6 +69,14 @@ export default class BookStore {
   };
 
   private setBook = (book: Book) => {
+    const user = store.userStore.user;
+    if (user) {
+      book.isReading = book.attendees!.some(
+        (a) => a.username === user.username
+      );
+      book.isHost = book.hostUsername === user.username;
+      book.host = book.attendees?.find((x) => x.username === book.hostUsername);
+    }
     book.date = new Date(book.date!);
     this.bookRegistry.set(book.id, book);
   };
@@ -79,39 +89,35 @@ export default class BookStore {
     this.loadingInitial = state;
   };
 
-  createBook = async (book: Book) => {
-    this.loading = true;
+  createBook = async (book: BookFormValues) => {
+    const user = store.userStore.user;
+    const attendee = new Profile(user!);
     try {
       await agent.Books.create(book);
+      const newBook = new Book(book);
+      newBook.hostUsername = user!.username;
+      newBook.attendees = [attendee];
+      this.setBook(newBook);
       runInAction(() => {
-        this.bookRegistry.set(book.id, book);
-        this.selectedBook = book;
-        this.editMode = false;
-        this.loading = false;
+        this.selectedBook = newBook;
       });
     } catch (error) {
       console.log(error);
-      runInAction(() => {
-        this.loading = false;
-      });
     }
   };
 
-  updateBook = async (book: Book) => {
-    this.loading = true;
+  updateBook = async (book: BookFormValues) => {
     try {
       await agent.Books.update(book);
       runInAction(() => {
-        this.bookRegistry.set(book.id, book);
-        this.selectedBook = book;
-        this.editMode = false;
-        this.loading = false;
+        if (book.id) {
+          let updatedBook = { ...this.getBook(book.id), ...book };
+          this.bookRegistry.set(book.id, updatedBook as Book);
+          this.selectedBook = updatedBook as Book;
+        }
       });
     } catch (error) {
       console.log(error);
-      runInAction(() => {
-        this.loading = false;
-      });
     }
   };
 
@@ -128,6 +134,46 @@ export default class BookStore {
       runInAction(() => {
         this.loading = false;
       });
+    }
+  };
+
+  updateAttendance = async () => {
+    const user = store.userStore.user;
+    this.loading = true;
+    try {
+      await agent.Books.attend(this.selectedBook!.id);
+      runInAction(() => {
+        if (this.selectedBook?.isReading) {
+          this.selectedBook.attendees = this.selectedBook.attendees?.filter(
+            (a) => a.username !== user?.username
+          );
+          this.selectedBook.isReading = false;
+        } else {
+          const attendee = new Profile(user!);
+          this.selectedBook?.attendees?.push(attendee);
+          this.selectedBook!.isReading = true;
+        }
+        this.bookRegistry.set(this.selectedBook!.id, this.selectedBook!);
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      runInAction(() => (this.loading = false));
+    }
+  };
+
+  cancelBookToggle = async () => {
+    this.loading = true;
+    try {
+      await agent.Books.attend(this.selectedBook!.id);
+      runInAction(() => {
+        this.selectedBook!.isCancelled = !this.selectedBook?.isCancelled;
+        this.bookRegistry.set(this.selectedBook!.id, this.selectedBook!);
+      });
+    } catch (error) {
+      console.error();
+    } finally {
+      runInAction(() => (this.loading = false));
     }
   };
 }

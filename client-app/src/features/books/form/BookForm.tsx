@@ -12,25 +12,16 @@ import MyTextArea from "../../../app/common/form/MyTextArea";
 import MySelectInput from "../../../app/common/form/MySelectInput";
 import { categoryOptions } from "../../../app/common/options/categoryOptions";
 import MyDateInput from "../../../app/common/form/MyDateInput";
-import { Book } from "../../../app/models/book";
 import { v4 as uuid } from "uuid";
+import { BookFormValues } from "../../../app/models/book";
 
 export default observer(function BookForm() {
   const history = useHistory();
   const { bookStore } = useStore();
-  const { loading, loadBook, loadingInitial, createBook, updateBook } =
-    bookStore;
+  const { loadBook, loadingInitial, createBook, updateBook } = bookStore;
   const { id } = useParams<{ id: string }>();
 
-  const [book, setBook] = useState<Book>({
-    id: "",
-    title: "",
-    category: "",
-    description: "",
-    date: null,
-    author: "",
-    language: "",
-  });
+  const [book, setBook] = useState<BookFormValues>(new BookFormValues());
 
   const validationSchema = Yup.object({
     title: Yup.string().required("The book title is required!"),
@@ -42,11 +33,11 @@ export default observer(function BookForm() {
   });
 
   useEffect(() => {
-    if (id) loadBook(id).then((book) => setBook(book!));
+    if (id) loadBook(id).then((book) => setBook(new BookFormValues(book)));
   }, [id, loadBook]);
 
-  function handleFormSubmit(book: Book) {
-    if (book.id.length === 0) {
+  function handleFormSubmit(book: BookFormValues) {
+    if (!book.id) {
       let newBook = {
         ...book,
         id: uuid(),
@@ -90,7 +81,7 @@ export default observer(function BookForm() {
             <MyTextInput placeholder="Language" name="language" />
             <Button
               disabled={isSubmitting || !dirty || !isValid}
-              loading={loading}
+              loading={isSubmitting}
               floated="right"
               positive
               type="submit"

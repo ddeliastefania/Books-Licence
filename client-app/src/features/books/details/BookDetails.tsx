@@ -28,7 +28,7 @@ export default observer(function BookDetails() {
         <BookDetailedChat />
       </Grid.Column>
       <Grid.Column width={6}>
-        <BookDetailedSidebar />
+        <BookDetailedSidebar book={book} />
       </Grid.Column>
     </Grid>
   );

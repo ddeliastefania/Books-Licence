@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button, Header, Item, Segment, Image } from "semantic-ui-react";
+import { Button, Header, Item, Segment, Image, Label } from "semantic-ui-react";
 import { Book } from "../../../app/models/book";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
+import { useStore } from "../../../app/stores/store";
 
 const activityImageStyle = {
   filter: "brightness(30%)",
@@ -23,9 +24,20 @@ interface Props {
 }
 
 export default observer(function BookDetailedHeader({ book }: Props) {
+  const {
+    bookStore: { updateAttendance, loading, cancelBookToggle },
+  } = useStore();
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
+        {book.isCancelled && (
+          <Label
+            style={{ position: "absolute", zIndex: 1000, left: -14, top: 20 }}
+            ribbon
+            color="red"
+            content="Cancelled"
+          />
+        )}
         <Image
           src={`/assets/categoryImages/${book.category}.jpg`}
           fluid
@@ -42,7 +54,12 @@ export default observer(function BookDetailedHeader({ book }: Props) {
                 />
                 <p>{format(book.date!, "dd MMM yyyy")}</p>
                 <p>
-                  Created/Added by <strong>Delia</strong>
+                  Created/Added by{" "}
+                  <strong>
+                    <Link to={`/profiles/${book.host?.username}`}>
+                      {book.host?.displayName}
+                    </Link>
+                  </strong>
                 </p>
               </Item.Content>
             </Item>
@@ -50,16 +67,40 @@ export default observer(function BookDetailedHeader({ book }: Props) {
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
-        <Button color="teal">See the book now</Button>
-        <Button>Not interest anymore</Button>
-        <Button
-          as={Link}
-          to={`/manage/${book.id}`}
-          color="orange"
-          floated="right"
-        >
-          See more details
-        </Button>
+        {book.isHost ? (
+          <>
+            <Button
+              color={book.isCancelled ? "green" : "red"}
+              floated="left"
+              basic
+              content={book.isCancelled ? "Re-activate Book" : "Cancel Book"}
+              onClick={cancelBookToggle}
+              loading={loading}
+            />
+            <Button
+              as={Link}
+              disabled={book.isCancelled}
+              to={`/manage/${book.id}`}
+              color="orange"
+              floated="right"
+            >
+              See more details about this book
+            </Button>
+          </>
+        ) : book.isReading ? (
+          <Button loading={loading} onClick={updateAttendance}>
+            Not interest anymore
+          </Button>
+        ) : (
+          <Button
+            disabled={book.isCancelled}
+            loading={loading}
+            onClick={updateAttendance}
+            color="teal"
+          >
+            See the book now
+          </Button>
+        )}
       </Segment>
     </Segment.Group>
   );
