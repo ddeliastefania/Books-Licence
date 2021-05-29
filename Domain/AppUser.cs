@@ -8,7 +8,8 @@ namespace Domain
         public string DisplayName { get; set; }
         public string Bio { get; set; }
 
-        public ICollection<BookAttendee> Books {get; set;}
-        
+        public ICollection<BookAttendee> Books { get; set; }
+        public ICollection<Photo> Photos { get; set; }
+
     }
 }
