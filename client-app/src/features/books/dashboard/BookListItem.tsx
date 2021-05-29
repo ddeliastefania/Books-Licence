@@ -26,14 +26,17 @@ export default function BookListItem({ book }: Props) {
               style={{ marginBottom: 3 }}
               size="tiny"
               circular
-              src="/assets/user.png"
+              src={book.host?.image || "/assets/user.png"}
             />
             <Item.Content>
               <Item.Header as={Link} to={`/books/${book.id}`}>
                 {book.title}
               </Item.Header>
               <Item.Description>
-                Added by {book.host?.displayName}
+                Added by{" "}
+                <Link to={`/profiles/${book.hostUsername}`}>
+                  {book.host?.displayName}
+                </Link>
               </Item.Description>
               {book.isHost && (
                 <Item.Description>

@@ -22,7 +22,7 @@ export default observer(function BookDetailedSidebar({
         inverted
         color="teal"
       >
-        {attendees.length} {attendees.length === 1 ? "Person" : "People"} are
+        {attendees.length} {attendees.length === 1 ? "person" : "people"} are
         reading this book
       </Segment>
       <Segment attached>
