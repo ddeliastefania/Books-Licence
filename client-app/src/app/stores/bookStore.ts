@@ -176,4 +176,8 @@ export default class BookStore {
       runInAction(() => (this.loading = false));
     }
   };
+
+  clearSelectedBook = () => {
+    this.selectedBook = undefined;
+  };
 }

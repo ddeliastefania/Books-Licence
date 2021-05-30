@@ -11,12 +11,18 @@ import BookDetailedHeader from "./BookDetaledHeader";
 
 export default observer(function BookDetails() {
   const { bookStore } = useStore();
-  const { selectedBook: book, loadBook, loadingInitial } = bookStore;
+  const {
+    selectedBook: book,
+    loadBook,
+    loadingInitial,
+    clearSelectedBook,
+  } = bookStore;
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (id) loadBook(id);
-  }, [id, loadBook]);
+    return () => clearSelectedBook();
+  }, [id, loadBook, clearSelectedBook]);
 
   if (loadingInitial || !book) return <LoadingComponent />;
 
@@ -25,7 +31,7 @@ export default observer(function BookDetails() {
       <Grid.Column width={10}>
         <BookDetailedHeader book={book} />
         <BookDetailedInfo book={book} />
-        <BookDetailedChat />
+        <BookDetailedChat bookId={book.id} />
       </Grid.Column>
       <Grid.Column width={6}>
         <BookDetailedSidebar book={book} />

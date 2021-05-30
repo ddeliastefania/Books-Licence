@@ -13,6 +13,7 @@ namespace Persistence
         public DbSet<Book> Books { get; set; }
         public DbSet<BookAttendee> BookAttendees { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -29,6 +30,11 @@ namespace Persistence
             .HasOne(u => u.Book)
             .WithMany(a => a.Attendees)
             .HasForeignKey(aa => aa.BookId);
+
+            builder.Entity<Comment>()
+            .HasOne(a => a.Book)
+            .WithMany(c => c.Comments)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,6 +1,7 @@
 using API.Controllers;
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Application.Books;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace API
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
-                
+
             }).AddFluentValidation(config =>
             {
                 config.RegisterValidatorsFromAssemblyContaining<Create>();
@@ -60,6 +61,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
