@@ -180,4 +180,18 @@ export default class BookStore {
   clearSelectedBook = () => {
     this.selectedBook = undefined;
   };
+
+  updateAttendeeFollowing = (username: string) => {
+    this.bookRegistry.forEach((book) => {
+      book.attendees.forEach((attendee) => {
+        if (attendee.username === username) {
+          attendee.following
+            ? attendee.followersCount--
+            : attendee.followersCount++;
+
+          attendee.following = !attendee.following;
+        }
+      });
+    });
+  };
 }
