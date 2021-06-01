@@ -192,9 +192,9 @@ export default class ProfileStore {
   loadUserBooks = async (username: string, predicate?: string) => {
     this.loadingBooks = true;
     try {
-      const activities = await agent.Profiles.listBooks(username, predicate!);
+      const books = await agent.Profiles.listBooks(username, predicate!);
       runInAction(() => {
-        this.userBooks = activities;
+        this.userBooks = books;
         this.loadingBooks = false;
       });
     } catch (error) {

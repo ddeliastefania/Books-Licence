@@ -11,19 +11,19 @@ interface Props {
   bookId: string;
 }
 
-export default observer(function ActivityDetailedChat({
-  bookId: activityId,
+export default observer(function BookDetailedChat({
+  bookId: bookId,
 }: Props) {
   const { commentStore } = useStore();
 
   useEffect(() => {
-    if (activityId) {
-      commentStore.createHubConnection(activityId);
+    if (bookId) {
+      commentStore.createHubConnection(bookId);
     }
     return () => {
       commentStore.clearComments();
     };
-  }, [commentStore, activityId]);
+  }, [commentStore, bookId]);
 
   return (
     <>
@@ -34,7 +34,7 @@ export default observer(function ActivityDetailedChat({
         color="teal"
         style={{ border: "none" }}
       >
-        <Header>Chat about this event</Header>
+        <Header>Let's talk about this book</Header>
       </Segment>
       <Segment attached clearing>
         <Formik

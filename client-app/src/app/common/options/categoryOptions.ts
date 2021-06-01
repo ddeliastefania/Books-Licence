@@ -16,10 +16,6 @@ export const categoryOptions = [
     value: "food",
   },
   {
-    text: "Music",
-    value: "music",
-  },
-  {
     text: "Knowledge",
     value: "knowledge",
   },
@@ -30,5 +26,29 @@ export const categoryOptions = [
   {
     text: "Mister",
     value: "mister",
+  },
+  {
+    text: "Dragoste",
+    value: "dragoste",
+  },
+  {
+    text: "Cooking",
+    value: "cooking",
+  },
+  {
+    text: "History",
+    value: "history",
+  },
+  {
+    text: "Parenting",
+    value: "parenting",
+  },
+  {
+    text: "SF",
+    value: "sf",
+  },
+  {
+    text: "Art",
+    value: "art",
   },
 ];

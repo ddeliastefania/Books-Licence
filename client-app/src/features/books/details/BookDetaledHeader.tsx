@@ -6,11 +6,11 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { useStore } from "../../../app/stores/store";
 
-const activityImageStyle = {
+const bookImageStyle = {
   filter: "brightness(30%)",
 };
 
-const activityImageTextStyle = {
+const bookImageTextStyle = {
   position: "absolute",
   bottom: "5%",
   left: "5%",
@@ -41,9 +41,9 @@ export default observer(function BookDetailedHeader({ book }: Props) {
         <Image
           src={`/assets/categoryImages/${book.category}.jpg`}
           fluid
-          style={activityImageStyle}
+          style={bookImageStyle}
         />
-        <Segment style={activityImageTextStyle} basic>
+        <Segment style={bookImageTextStyle} basic>
           <Item.Group>
             <Item>
               <Item.Content>
