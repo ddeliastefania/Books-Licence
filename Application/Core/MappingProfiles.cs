@@ -1,12 +1,12 @@
 using System.Linq;
 using Application.Books;
 using Application.Comments;
-using AutoMapper;
+using Application.Profiles;
 using Domain;
 
 namespace Application.Core
 {
-    public class MappingProfiles : Profile
+    public class MappingProfiles : AutoMapper.Profile
     {
         public MappingProfiles()
         {
@@ -32,6 +32,12 @@ namespace Application.Core
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.CommentAuthor.DisplayName))
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.CommentAuthor.UserName))
                 .ForMember(d => d.Image, o => o.MapFrom(s => s.CommentAuthor.Photos.FirstOrDefault(x => x.IsMain).Url));
+            CreateMap<BookAttendee, UserBookDto>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Book.Id))
+                .ForMember(d => d.Date, o => o.MapFrom(s => s.Book.Date))
+                .ForMember(d => d.Title, o => o.MapFrom(s => s.Book.Title))
+                .ForMember(d => d.Category, o => o.MapFrom(s =>s.Book.Category))
+                .ForMember(d => d.HostUsername, o => o.MapFrom(s =>s.Book.Attendees.FirstOrDefault(x =>x.IsHost).AppUser.UserName));
         }
     }
 }

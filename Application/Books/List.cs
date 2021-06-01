@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
@@ -13,8 +14,11 @@ namespace Application.Books
 {
     public class List
     {
-        public class Query : IRequest<Result<List<BookDto>>> { }
-        public class Handler : IRequestHandler<Query, Result<List<BookDto>>>
+        public class Query : IRequest<Result<PagedList<BookDto>>>
+        {
+            public BookParams Params { get; set; }
+        }
+        public class Handler : IRequestHandler<Query, Result<PagedList<BookDto>>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -25,13 +29,27 @@ namespace Application.Books
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<List<BookDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PagedList<BookDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var books = await _context.Books
+                var query = _context.Books
+                .Where(d => d.Date >= request.Params.StartDate)
+                .OrderBy(d => d.Date)
                 .ProjectTo<BookDto>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
-                .ToListAsync(cancellationToken);
+                .AsQueryable();
 
-                return Result<List<BookDto>>.Success(books);
+                if (request.Params.IsGoing && !request.Params.IsHost)
+                {
+                    query = query.Where(x => x.Attendees.Any(a => a.Username == _userAccessor.GetUsername()));
+                }
+
+                if (request.Params.IsHost && !request.Params.IsGoing)
+                {
+                    query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
+                }
+
+                return Result<PagedList<BookDto>>.Success(
+                    await PagedList<BookDto>.CreateAsync(query, request.Params.PageNumber, request.Params.PageSize)
+                );
             }
         }
     }

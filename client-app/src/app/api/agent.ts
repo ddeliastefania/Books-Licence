@@ -2,7 +2,8 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { Book, BookFormValues } from "../models/book";
-import { Photo, Profile } from "../models/profile";
+import { PaginatedResult } from "../models/pagination";
+import { Photo, Profile, UserBook } from "../models/profile";
 import { User, UserFormValues } from "../models/user";
 import { store } from "../stores/store";
 
@@ -23,6 +24,14 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   async (response) => {
     await sleep(1000);
+    const pagination = response.headers["pagination"];
+    if (pagination) {
+      response.data = new PaginatedResult(
+        response.data,
+        JSON.parse(pagination)
+      );
+      return response as AxiosResponse<PaginatedResult<any>>;
+    }
     return response;
   },
   (error: AxiosError) => {
@@ -73,7 +82,8 @@ const requests = {
 };
 
 const Books = {
-  list: () => requests.get<Book[]>("/books"),
+  list: (params: URLSearchParams) =>
+    axios.get<PaginatedResult<Book[]>>("/books", { params }).then(responseBody),
   details: (id: string) => requests.get<Book>(`/books/${id}`),
   create: (book: BookFormValues) => requests.post<void>("/books", book),
   update: (book: BookFormValues) =>
@@ -102,9 +112,14 @@ const Profiles = {
   deletePhoto: (id: string) => requests.del(`/photos/${id}`),
   updateProfile: (profile: Partial<Profile>) =>
     requests.put(`/profiles`, profile),
-  updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
+  updateFollowing: (username: string) =>
+    requests.post(`/follow/${username}`, {}),
   listFollowings: (username: string, predicate: string) =>
-      requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+    requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+  listBooks: (username: string, predicate: string) =>
+    requests.get<UserBook[]>(
+      `/profiles/${username}/books?predicate=${predicate}`
+    ),
 };
 
 const agent = {
