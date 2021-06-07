@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@heroku/buildpack-registry": "^1.0.1"
+  },
+  "dependencies": {
+    "@heroku-cli/plugin-buildpacks": "^7.54.0"
+  }
+}

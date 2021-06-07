@@ -43,7 +43,7 @@ export default observer(function BookForm() {
         id: uuid(),
       };
       createBook(newBook).then(() => history.push(`/books/${newBook.id}`));
-    } else {
+    } else { 
       updateBook(book).then(() => history.push(`/books/${book.id}`));
     }
   }

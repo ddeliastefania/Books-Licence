@@ -26,7 +26,7 @@ export default observer(function NavBar() {
             as={NavLink}
             to="/createBook"
             positive
-            content="Create Book"
+            content="Create/Add Book"
           />
         </Menu.Item>
         <Menu.Item position="right">

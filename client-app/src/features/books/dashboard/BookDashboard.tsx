@@ -46,7 +46,6 @@ export default observer(function BookDashboard() {
             <BookList />
           </InfiniteScroll>
         )}
-        ;
       </Grid.Column>
       <Grid.Column width="6">
         <BookFilters />
